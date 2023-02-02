@@ -183,6 +183,7 @@ if __name__ == '__main__':
     ds_torch = torch.from_numpy(np.concatenate(ds_list, axis=0)).type(torch.float)
     ds_torch = ds_torch.reshape(len(ds_list), -1)
     trainloader = DataLoader(ds_torch, batch_size=batch_size, shuffle=False)
+    class_idx = None
     # # evalloader = DataLoader(ds['validation'].with_format("torch"), batch_size=batch_size)
     # label2id = {l:i for i, l in enumerate(ds['labels'])}
     # id2label = {i:l for i, l in enumerate(ds['labels'])}
@@ -242,7 +243,9 @@ if __name__ == '__main__':
                 inputs = inputs.to(device)
 
             outputs = mlp(inputs)
-            class_idx = outputs.argmax(dim=1).unsqueeze(dim=1)
+
+            if class_idx is None:
+                class_idx = outputs.argmax(dim=1).unsqueeze(dim=1)
             test_num = index+1
 
             interaction = get_second_order_grad(mlp, inputs, class_idx)
